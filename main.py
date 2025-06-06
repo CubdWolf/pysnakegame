@@ -5,7 +5,7 @@ import random
 #config
 cellSize = 25
 cellCount = 30
-mode = 2 #1 die, 2 other side
+mode = 1 #1 die, 2 other side
 
 
 
