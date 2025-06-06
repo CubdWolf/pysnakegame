@@ -4,7 +4,10 @@ import random
 
 #config
 cellSize = 25
-cellCount = 25
+cellCount = 30
+mode = 2 #1 die, 2 other side
+
+
 
 #bg stuff
 bgcellcolor = (100,155,100)
@@ -28,11 +31,14 @@ snakeposy= cellSize*(cellCount//2)
 snakedir = 0 #0up, 1right, 2down, 3left
 snakelistx = []
 snakelisty = []
-snakelen = 0
+snakelen = 99
 
 
 #init pygame
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("sillyaudio.ogg")
+pygame.mixer.music.play(-1)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((cellSize *cellCount, cellSize *cellCount))
 running = True
@@ -40,7 +46,7 @@ pygame.display.set_caption("Silly Audie!!!")
 
 #timer stuff
 moveEvent = pygame.USEREVENT+1
-pygame.time.set_timer(moveEvent, 150)
+pygame.time.set_timer(moveEvent, 50)
 
 #die
 dieCell = pygame.Surface((cellSize,cellSize))
@@ -105,23 +111,34 @@ while running:
             #fruit     
             #print(fruitExist)
             if fruitExist == False:
-                fx = cellSize*(random.randint(0,(cellCount-1)))
-                fy = cellSize*(random.randint(0,(cellCount-1)))
+                flp = 1
+                while flp == 1:
+                    fx = cellSize*(random.randint(0,(cellCount-1)))
+                    fy = cellSize*(random.randint(0,(cellCount-1)))
+                    for i in range(1,snakelen+1):
+                        try:
+                            if fx != snakelistx[-i] and fy != snakelisty[-i]:
+                                flp = 0
+                        except:
+                            flp = 0
             screen.blit(fruitCell, (fx,fy))
             fruitExist=True
 
             if snakeposx == fx and snakeposy == fy:
-                #fruitExist =False
+                fruitExist =False
                 snakelen +=1
 
             print("moved")
             snakelistx.append(snakeposx)
             snakelisty.append(snakeposy)
-            snakeCell.fill(headcolor)
-            screen.blit(snakeCell, (snakeposx,snakeposy))
             snakeCell.fill(snakecolor)
             for i in range(2,snakelen+2):
-                screen.blit(snakeCell, (snakelistx[-i], snakelisty[-i]))
+                try:
+                    screen.blit(snakeCell, (snakelistx[-i], snakelisty[-i]))
+                except:
+                    print("heh")
+            snakeCell.fill(headcolor)
+            screen.blit(snakeCell, (snakeposx,snakeposy))
             if snakedir == 0:
                 print("movedup")
                 snakeposy -= cellSize
@@ -135,10 +152,26 @@ while running:
                 print("movedup")
                 snakeposx -= cellSize
             for i in range(1,snakelen+1):
-                if snakeposx == snakelistx[-i] and snakeposy == snakelisty[-i]:
+                try:
+                    if snakeposx == snakelistx[-i] and snakeposy == snakelisty[-i]:
+                        if mode ==1:
+                            moveEvent = die(snakeposx,snakeposy)
+                        elif mode ==2:
+                            print("die")
+                except:
+                    print("heh")
+            if snakeposx > (cellCount-1)*cellSize or snakeposx < 0 or snakeposy < 0 or snakeposy > (cellCount-1)*cellSize:
+                if mode ==1:
                     moveEvent = die(snakeposx,snakeposy)
-            if snakeposx > cellCount*cellSize or snakeposx < 0 or snakeposy < 0 or snakeposy > cellCount*cellSize:
-                moveEvent = die(snakeposx, snakeposy)
+                elif mode ==2:
+                    if snakeposx > (cellCount-1)*cellSize:
+                        snakeposx = 0
+                    elif snakeposy > (cellCount-1)*cellSize:
+                        snakeposy = 0
+                    elif snakeposx < 0:
+                        snakeposx = cellCount*cellSize
+                    elif snakeposy < 0:
+                        snakeposy = cellCount*cellSize
             pending = 0
 
 
@@ -155,6 +188,6 @@ while running:
     if len(fpstable) > 0:
         pygame.display.set_caption(f"min: {str(min(fpstable))} current: {str(clock.get_fps())} max: {str(max(fpstable))} z: {zero} nz: {nozero}")
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(120)
 
 pygame.quit()
