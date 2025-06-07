@@ -7,46 +7,21 @@ cellSize = 25
 cellCount = 30
 mode = 1 #1 die, 2 other side
 
-
-
 #bg stuff
 bgcellcolor = (100,155,100)
 bgcellcolor2 = (120,155,120)
 bgCell = pygame.Surface((cellSize,cellSize))
 bgCell.fill(bgcellcolor)
 
-
 #fruit
 fruitcellcolor = "red"
 fruitCell = pygame.Surface((cellSize,cellSize))
 fruitCell.fill(fruitcellcolor)
-fruitExist = False
 
 #snake
 snakecolor = (128,128,0)
 headcolor = (200,200,0)
 snakeCell = pygame.Surface((cellSize,cellSize))
-snakeposx= cellSize*(cellCount//2)
-snakeposy= cellSize*(cellCount//2)
-snakedir = 0 #0up, 1right, 2down, 3left
-snakelistx = []
-snakelisty = []
-snakelen = 99
-
-
-#init pygame
-pygame.init()
-pygame.mixer.init()
-pygame.mixer.music.load("sillyaudio.ogg")
-pygame.mixer.music.play(-1)
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode((cellSize *cellCount, cellSize *cellCount))
-running = True
-pygame.display.set_caption("Silly Audie!!!")
-
-#timer stuff
-moveEvent = pygame.USEREVENT+1
-pygame.time.set_timer(moveEvent, 50)
 
 #die
 dieCell = pygame.Surface((cellSize,cellSize))
@@ -56,15 +31,28 @@ def die(snakeposx, snakeposy):
     print("die")
     return 1
 
-#surface1 and pos
-surface1 = pygame.Surface((100,50))
-x = (1280-50)/2
-y = (720-25)/2
-
-#input stuff
+#reset
+    #fruit
+fruitExist = False
+    #snake
+snakeposx= cellSize*(cellCount//2)
+snakeposy= cellSize*(cellCount//2)
+snakedir = 0 #0up, 1right, 2down, 3left
+snakelistx = []
+snakelisty = []
+snakelen = 4
+    #init pygame
+pygame.init()
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode((cellSize *cellCount, cellSize *cellCount))
+running = True
+pygame.display.set_caption("Silly Audie!!!")
+    #timer stuff
+moveEvent = pygame.USEREVENT+1
+pygame.time.set_timer(moveEvent, 50)
+    #input stuff
 pending = 0
-
-#fps stuff
+    #fps stuff
 zero = 0
 nozero = 0
 fpstable = []
@@ -74,25 +62,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN and pending == 0:
-            if event.key == pygame.K_UP: 
-                if snakedir != 2:
-                    snakedir = 0
-                    pending = 1
-            elif event.key == pygame.K_RIGHT: 
-                if snakedir != 3:
-                    snakedir = 1
-                    pending = 1
-            elif event.key == pygame.K_DOWN: 
-                if snakedir != 0:
-                    snakedir = 2
-                    pending = 1
-            elif event.key == pygame.K_LEFT: 
-                if snakedir != 1:
-                    snakedir = 3
-                    pending = 1
-            elif event.key ==pygame.K_SPACE:
-                snakelen +=1
         elif event.type == moveEvent:
                     #background
             screen.fill(bgcellcolor2)
